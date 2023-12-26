@@ -1,79 +1,24 @@
-import { useState } from "react";
-import error from "../assets/Group.svg";
 import { useToast } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import error from "../assets/Group.svg";
 
 const SignUp = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const toast = useToast();
-  const [errorFields, setErrorFields] = useState({
-    firstName: false,
-    lastName: false,
-    email: false,
-    password: false,
-  });
-
-  const handleInputChange = (e) => {
-    const { value, name } = e.target;
-
-    const isValid = {
-      firstName: value.trim().length > 0,
-      lastName: value.trim().length > 0,
-      email: /\S+@\S+\.\S+/.test(value),
-      password: value.trim().length > 0,
-    };
-    setErrorFields({
-      ...errorFields,
-      [name]: !isValid[name],
-    });
-
-    switch (name) {
-      case "firstName":
-        setFirstName(value);
-        break;
-      case "lastName":
-        setLastName(value);
-        break;
-      case "email":
-        setEmail(value);
-        break;
-      case "password":
-        setPassword(value);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValidForm =
-      firstName.trim().length > 0 &&
-      lastName.trim().length > 0 &&
-      /\S+@\S+\.\S+/.test(email) &&
-      password.trim().length > 0;
-
-    if (!isValidForm) {
-      setErrorFields({
-        firstName: firstName.trim().length === 0,
-        lastName: lastName.trim().length === 0,
-        email: !/\S+@\S+\.\S+/.test(email),
-        password: password.trim().length === 0,
-      });
-    } else {
+  const onSubmit = (data) => {
+    if (data)
       toast({
-        title: "Required Details.",
-        description: "Please enter your details.",
+        title: "Account created.",
+        description: "We've created your account for you.",
         status: "success",
         duration: 9000,
-        isClosable: true,
-        position: "bottom-right",
+        isClosable: false,
       });
-    }
   };
-
   return (
     <div className="bg">
       <div className="BgImg">
@@ -97,88 +42,86 @@ const SignUp = () => {
                 <span className="font-[400] "> then $20/mo. thereafter </span>
               </p>
             </div>
-            <div className="w-full h-[33.625rem] rounded-[0.625rem] bg-white max-sm:h-[29.5rem] ">
+            <div className="w-full rounded-[0.625rem] bg-white  ">
               {/* forms */}
-              <form onSubmit={(e) => handleSubmit(e)}>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="px-10 py-10 space-y-5 max-sm:p-7 ">
                   <div>
-                    <div className="flex">
-                      <input
-                        className={`border-[1px] h-[3.5rem] w-[28.75rem] rounded-[0.3125rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] focus:outline-none focus:border-[#5E54A4] focus:ring-1focus:ring-[#5E54A4]max-sm:w-[17.4375rem] ${
-                          errorFields.firstName ? "border-red-500" : ""
-                        }`}
-                        value={firstName}
-                        type="text"
-                        name="firstName"
-                        placeholder="First Name"
-                        onChange={handleInputChange}
-                      />
-                      {errorFields.firstName && (
-                        <img
-                          className="relative -ml-10"
-                          src={error}
-                          alt="Error"
+                    <div className="flex flex-col">
+                      <div className="flex">
+                        <input
+                          className="border-[1px] h-[3.5rem] w-[28.75rem] rounded-[0.3125rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] focus:outline-none focus:border-[#5E54A4] focus:ring-1focus:ring-[#5E54A4]max-sm:w-[17.4375rem]"
+                          placeholder="firstName"
+                          {...register("firstName", {
+                            required: true,
+                          })}
                         />
+                        {errors?.firstName?.type === "required" && (
+                          <img
+                            className="-ml-8 "
+                            src={error}
+                            alt="Error"
+                            width={20}
+                          />
+                        )}
+                      </div>
+                      {errors?.firstName?.type === "required" && (
+                        <div className="mt-2 text-[#FF7979] text-right ">
+                          <p className="text-[0.6875rem] font-[500]">
+                            First Name cannot be empty
+                          </p>
+                        </div>
                       )}
                     </div>
-                    {errorFields.firstName && (
-                      <div className="mt-2 text-[#FF7979] text-right">
-                        <p className="text-[0.6875rem] font-[500]">
-                          First Name cannot be empty
-                        </p>
-                      </div>
-                    )}
                   </div>
                   <div>
-                    <div className="flex">
-                      <input
-                        className={`border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] opacity-0.75 focus:outline-none focus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4] max-sm:w-[17.4375rem] ${
-                          errorFields.lastName ? "border-red-500" : ""
-                        }`}
-                        value={lastName}
-                        name="lastName"
-                        onChange={handleInputChange}
-                        type="text"
-                        placeholder="Last Name"
-                      />
-                      {errorFields.lastName && (
-                        <img
-                          className="relative -ml-10"
-                          src={error}
-                          alt="Error"
+                    <div className="flex flex-col">
+                      <div className="flex">
+                        <input
+                          className="border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] opacity-0.75 focus:outline-none focus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4] max-sm:w-[17.4375rem]"
+                          placeholder="lastName"
+                          {...register("lastName", {
+                            required: true,
+                          })}
                         />
+                        {errors?.lastName?.type === "required" && (
+                          <img
+                            className="-ml-8"
+                            src={error}
+                            alt="Error"
+                            width={20}
+                          />
+                        )}
+                      </div>
+                      {errors?.lastName?.type === "required" && (
+                        <div className="mt-2 text-[#FF7979] text-right">
+                          <p className="text-[0.6875rem] font-[500]">
+                            Last Name cannot be empty
+                          </p>
+                        </div>
                       )}
                     </div>
-                    {errorFields.lastName && (
-                      <div className="mt-2 text-[#FF7979] text-right">
-                        <p className="text-[0.6875rem] font-[500]">
-                          Last Name cannot be empty
-                        </p>
-                      </div>
-                    )}
                   </div>
 
-                  <div>
+                  <div className="flex flex-col">
                     <div className="flex">
                       <input
-                        className={`border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem]  opacity-0.75 focus:outline-nonefocus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4]max-sm:w-[17.4375rem] ${
-                          errorFields.email ? "border-red-500" : ""
-                        }`}
-                        value={email}
-                        name="email"
-                        onChange={handleInputChange}
-                        type="email"
+                        className="border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem]  opacity-0.75 focus:outline-nonefocus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4]max-sm:w-[17.4375rem]"
                         placeholder="Email Address"
+                        {...register("email", {
+                          required: true,
+                        })}
                       />
-                      {errorFields.email && (
+                      {errors?.email?.type === "required" && (
                         <img
-                          className="relative -ml-10"
+                          className="relative -ml-8"
                           src={error}
                           alt="Error"
+                          width={20}
                         />
                       )}
                     </div>
-                    {errorFields.email && (
+                    {errors?.email?.type === "required" && (
                       <div className="mt-2 text-[#FF7979] text-right">
                         <p className="text-[0.6875rem] font-[500]">
                           Looks like this is not an email
@@ -186,27 +129,26 @@ const SignUp = () => {
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="flex flex-col">
                     <div className="flex">
                       <input
-                        className={`border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] opacity-0.75 focus:outline-none  focus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4]max-sm:w-[17.4375rem] ${
-                          errorFields.password ? "border-red-500" : ""
-                        }`}
-                        value={password}
-                        name="password"
-                        onChange={handleInputChange}
+                        className="border-[1px] h-[3.5rem] rounded-[0.3125rem] w-[28.75rem] text-[#3D3B48] text-[0.875rem] font-[600] pl-8 tracking-[0.01563rem] leading-[1.625rem] opacity-0.75 focus:outline-none  focus:border-[#5E54A4] focus:ring-1 focus:ring-[#5E54A4]max-sm:w-[17.4375rem]"
                         type="password"
-                        placeholder="Password"
+                        placeholder="password"
+                        {...register("password", {
+                          required: true,
+                        })}
                       />
-                      {errorFields.password && (
+                      {errors?.password?.type === "required" && (
                         <img
-                          className="relative -ml-10"
+                          className="relative -ml-8"
                           src={error}
                           alt="Error"
+                          width={20}
                         />
                       )}
                     </div>
-                    {errorFields.password && (
+                    {errors?.password?.type === "required" && (
                       <div className="mt-2 text-[#FF7979] text-right">
                         <p className="text-[0.6875rem] font-[500]">
                           Password cannot be empty
